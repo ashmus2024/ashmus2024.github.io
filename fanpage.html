@@ -613,6 +613,144 @@
         <div class="bg-image"></div>
     </div>
 
+    <div class="audio-player">
+    <div class="current-song" id="currentSong">🎵 Sorry - Justin Bieber</div>
+    <div class="audio-controls">
+        <button class="prev-btn" onclick="playPrevSong()">⏮️</button>
+        <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">▶️</button>
+        <button class="next-btn" onclick="playNextSong()">⏭️</button>
+        <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" onchange="changeVolume()">
+    </div>
+
+    <!-- YouTube iframe container (hidden video) -->
+    <div id="player" style="width:0; height:0; visibility:hidden;"></div>
+    </div>
+    
+    <script>
+        let player;
+        let isPlaying = false;
+        let isMuted = true;
+        let currentSongIndex = 0;
+    
+        const playlist = [
+            { title: "Sorry - Justin Bieber", id: "fRh_vgS2dFE" },
+            { title: "Love Yourself - Justin Bieber", id: "oyEuk8j8imI" },
+            { title: "What Do You Mean? - Justin Bieber", id: "DK_0jXPuIr0" },
+            { title: "Baby - Justin Bieber ft. Ludacris", id: "kffacxfA7G4" },
+            { title: "Peaches - Justin Bieber ft. Daniel Caesar & Giveon", id: "tQ0yjYUFKAE" },
+            { title: "Stay - The Kid LAROI & Justin Bieber", id: "kTJczUoc26U" }
+        ];
+    
+        // Load YouTube IFrame API
+        let tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.body.appendChild(tag);
+    
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                videoId: playlist[currentSongIndex].id,
+                playerVars: {
+                    autoplay: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: onPlayerReady,
+                    onStateChange: onPlayerStateChange
+                }
+            });
+        }
+    
+        function onPlayerReady(event) {
+            player.mute();
+            isMuted = true;
+            player.setVolume(50);
+            event.target.playVideo();
+            isPlaying = true;
+            document.getElementById('playPauseBtn').textContent = '⏸️';
+            document.getElementById('currentSong').textContent = `🎵 ${playlist[currentSongIndex].title}`;
+    
+            // Unmute after 5 seconds
+            setTimeout(() => {
+                player.unMute();
+                isMuted = false;
+                document.getElementById('muteBtn').textContent = '🔊';
+            }, 5000);
+        }
+    
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                playNextSong();
+            }
+        }
+    
+        function togglePlayPause() {
+            if (isPlaying) {
+                player.pauseVideo();
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶️';
+            } else {
+                player.playVideo();
+                isPlaying = true;
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+            }
+        }
+    
+        function toggleMute() {
+            const muteBtn = document.getElementById('muteBtn');
+            if (isMuted) {
+                player.unMute();
+                isMuted = false;
+                muteBtn.textContent = '🔊';
+                document.getElementById('volumeSlider').value = player.getVolume();
+            } else {
+                player.mute();
+                isMuted = true;
+                muteBtn.textContent = '🔇';
+                document.getElementById('volumeSlider').value = 0;
+            }
+        }
+    
+        function changeVolume() {
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volume = parseInt(volumeSlider.value);
+            player.setVolume(volume);
+    
+            if (volume === 0) {
+                player.mute();
+                isMuted = true;
+                document.getElementById('muteBtn').textContent = '🔇';
+            } else {
+                if (isMuted) player.unMute();
+                isMuted = false;
+                document.getElementById('muteBtn').textContent = '🔊';
+            }
+        }
+    
+        function playNextSong() {
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadSong(currentSongIndex);
+        }
+    
+        function playPrevSong() {
+            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
+            loadSong(currentSongIndex);
+        }
+    
+        function loadSong(index) {
+            const song = playlist[index];
+            player.loadVideoById(song.id);
+            document.getElementById('currentSong').textContent = `🎵 ${song.title}`;
+            if (!isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
+    </script>
+
     <!-- Content -->
     <div class="content">
         <!-- Header Section -->
