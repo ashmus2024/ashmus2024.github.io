@@ -18,10 +18,6 @@
             color: white;
         }
 
-        section {
-        background-color: transparent;
-        }
-
         /* Scrolling Background */
         .background-container {
             position: fixed;
@@ -49,16 +45,14 @@
             opacity: 0.7;
         }
 
-        .bg-image:nth-child(1) { background-image: url('./img/justin1.jpg?height=1080&width=1920'); }
-        .bg-image:nth-child(2) { background-image: url('./img/justin2.jpg?height=1080&width=1920'); }
-        .bg-image:nth-child(3) { background-image: url('./img/justin3.jpg?height=1080&width=1920'); }
-        .bg-image:nth-child(4) { background-image: url('./img/justin4.jpg?height=1080&width=1920'); }
-        .bg-image:nth-child(5) { background-image: url('./img/justin5.jpg?height=1080&width=1920'); }
-        .bg-image:nth-child(6) { background-image: url('./img/justin6.jpg?height=1080&width=1920'); }
-
+        .bg-image:nth-child(1) { background-image: url('/placeholder.svg?height=1080&width=1920'); }
+        .bg-image:nth-child(2) { background-image: url('/placeholder.svg?height=1080&width=1920'); }
+        .bg-image:nth-child(3) { background-image: url('/placeholder.svg?height=1080&width=1920'); }
+        .bg-image:nth-child(4) { background-image: url('/placeholder.svg?height=1080&width=1920'); }
+        .bg-image:nth-child(5) { background-image: url('/placeholder.svg?height=1080&width=1920'); }
 
         /* Simplified audio player styles */
-         .audio-player {
+               .audio-player {
             position: fixed;
             bottom: 24px;
             right: 24px;
@@ -228,6 +222,8 @@
         /* Added timeline styles */
         .timeline-section {
             padding: 4rem 2rem;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
         }
 
         .timeline-container {
@@ -331,6 +327,42 @@
             opacity: 0.9;
         }
 
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,107,157,0.2);
+            border: 1px solid rgba(255,107,157,0.3);
+            border-radius: 50%;
+            color: #ff6b9d;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: rgba(255,107,157,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255,107,157,0.3);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
             40% { transform: translateX(-50%) translateY(-10px); }
@@ -340,6 +372,8 @@
         /* Music Videos Section */
         .music-section {
             padding: 4rem 2rem;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
         }
 
         .section-title {
@@ -397,6 +431,8 @@
         /* Sticky Notes Section */
         .sticky-section {
             padding: 4rem 2rem;
+            background: rgba(20,20,20,0.95);
+            backdrop-filter: blur(10px);
             min-height: 100vh;
         }
 
@@ -569,12 +605,9 @@
             opacity: 0.8;
         }
 
-        /* Added timeline popup styles */
+        /* Enhanced timeline popup with smooth transitions */
         .timeline-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: absolute;
             background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
             border-radius: 15px;
@@ -584,35 +617,17 @@
             display: none;
             max-width: 400px;
             text-align: center;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
         }
 
-        .timeline-popup img {
-            width: 200px;
-            height: 200px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 1rem;
-        }
-
-        .timeline-popup h3 {
-            color: #ff6b9d;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
-
-        .timeline-popup p {
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .close-popup {
-            background: linear-gradient(45deg, #ff6b9d, #c44569);
-            border: none;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
+        .timeline-popup.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
         }
 
         /* Responsive */
@@ -641,36 +656,25 @@
         <div class="bg-image"></div>
     </div>
 
-     <div class="audio-player">
-        <div class="current-song" id="currentSong">
-            ♪ Sorry - Justin Bieber
-        </div>
+    <!-- Enhanced audio player with play/pause button -->
+    <div class="audio-player">
+        <div class="current-song" id="currentSong">♪ Sorry - Justin Bieber</div>
         <div class="audio-controls">
-            <button class="prev-btn" onclick="playPrevSong()">
-                ‹‹
-            </button>
-            <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
-                ▶
-            </button>
-            <button class="next-btn" onclick="playNextSong()">
-                ››
-            </button>
-            <!-- Updated mute button to use text symbols instead of emojis -->
-            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">
-                ♪
-            </button>
+            <button class="prev-btn" onclick="playPrevSong()">‹‹</button>
+            <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">▶</button>
+            <button class="next-btn" onclick="playNextSong()">››</button>
+            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">♪</button>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
         </div>
 
-        <!-- YouTube iframe container (hidden) -->
-        <div id="youtube-player"></div>
+        <!-- Hidden YouTube player -->
+        <div id="youtube-player" style="display:none;"></div>
     </div>
 
     <script>
-        // YouTube API integration
         let player;
         let isPlaying = false;
-        let isMuted = true;
+        let isMuted = false;
         let currentSongIndex = 0;
 
         const playlist = [
@@ -682,15 +686,16 @@
             { title: "Stay - The Kid LAROI & Justin Bieber", id: "kTJczUoc26U" }
         ];
 
-        // Load YouTube API
+        // Load YouTube API script
         function loadYouTubeAPI() {
+            if (document.getElementById("yt-script")) return;
             const tag = document.createElement('script');
+            tag.id = "yt-script";
             tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+            document.body.appendChild(tag);
         }
 
-        // YouTube API ready callback
+        // Called automatically by YouTube API
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('youtube-player', {
                 height: '0',
@@ -706,70 +711,72 @@
                 },
                 events: {
                     onReady: onPlayerReady,
-                    onStateChange: onPlayerStateChange
+                    onStateChange: onPlayerStateChange,
+                    onError: onPlayerError
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            player.mute();
+        function onPlayerReady() {
             player.setVolume(50);
+            updateMuteButton();
         }
 
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.ENDED) {
-                playNextSong();
-            }
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').textContent = '⏸';
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶';
+            }    
+        }
+
+        function onPlayerError() {
+            playNextSong();
         }
 
         function togglePlayPause() {
             if (!player) return;
-            
             if (isPlaying) {
                 player.pauseVideo();
-                document.getElementById('playPauseBtn').textContent = '▶';
-                isPlaying = false;
             } else {
                 player.playVideo();
-                document.getElementById('playPauseBtn').textContent = '⏸';
-                isPlaying = true;
             }
         }
 
         function playNextSong() {
+            if (!player) return;
             currentSongIndex = (currentSongIndex + 1) % playlist.length;
             loadCurrentSong();
         }
 
         function playPrevSong() {
+            if (!player) return;
             currentSongIndex = currentSongIndex === 0 ? playlist.length - 1 : currentSongIndex - 1;
             loadCurrentSong();
         }
 
         function loadCurrentSong() {
-            if (!player) return;
-            
             player.loadVideoById(playlist[currentSongIndex].id);
             document.getElementById('currentSong').textContent = `♪ ${playlist[currentSongIndex].title}`;
-            
-            if (isPlaying) {
-                setTimeout(() => player.playVideo(), 500);
-            }
         }
 
-        /* Updated mute toggle to use consistent text symbols */
         function toggleMute() {
             if (!player) return;
-            
             if (isMuted) {
                 player.unMute();
-                document.getElementById('muteBtn').textContent = '♪';
                 isMuted = false;
             } else {
                 player.mute();
-                document.getElementById('muteBtn').textContent = '♫';
                 isMuted = true;
             }
+            updateMuteButton();
+        }
+
+        function updateMuteButton() {
+            const muteBtn = document.getElementById('muteBtn');
+            muteBtn.textContent = isMuted ? '♫' : '♪';
         }
 
         function changeVolume(value) {
@@ -777,8 +784,8 @@
             player.setVolume(value);
         }
 
-        // Initialize
-        loadYouTubeAPI();
+        // Init
+        document.addEventListener('DOMContentLoaded', loadYouTubeAPI);
     </script>
 
     <!-- Content -->
@@ -787,43 +794,54 @@
         <section class="header">
             <h1>JUSTIN BIEBER</h1>
             <p>The Ultimate Fan Experience</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/justinbieber/" target="_blank" class="social-link" title="Instagram">📷</a>
+                <a href="https://www.tiktok.com/@justinbieber" target="_blank" class="social-link" title="TikTok">🎵</a>
+                <a href="https://twitter.com/justinbieber" target="_blank" class="social-link" title="Twitter">🐦</a>
+                <a href="https://www.youtube.com/user/JustinBieberVEVO" target="_blank" class="social-link" title="YouTube">📺</a>
+                <a href="https://open.spotify.com/artist/1uNFoZAHBGtllmzznpCI3s" target="_blank" class="social-link" title="Spotify">🎧</a>
+            </div>
+            <div class="scroll-indicator">
+                <div style="font-size: 2rem;">↓</div>
+            </div>
         </section>
 
-        <!-- Updated timeline items to be clickable with popup functionality -->
+        <!-- Updated timeline items to use hover instead of click -->
         <section class="timeline-section">
             <h2 class="section-title">Justin's Journey</h2>
             <div class="timeline-container">
                 <div class="timeline-line"></div>
                 <div class="timeline">
-                    <div class="timeline-item" onclick="showTimelinePopup('1994')">
+                    <!-- Removed onclick attributes, will use hover events instead -->
+                    <div class="timeline-item" data-year="1994">
                         <div class="timeline-year">1994</div>
                         <div class="timeline-event">Born in London, Ontario, Canada on March 1st</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2007')">
+                    <div class="timeline-item" data-year="2007">
                         <div class="timeline-year">2007</div>
                         <div class="timeline-event">Discovered on YouTube by talent manager Scooter Braun</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2009')">
+                    <div class="timeline-item" data-year="2009">
                         <div class="timeline-year">2009</div>
                         <div class="timeline-event">Released debut single "One Time" and EP "My World"</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2010')">
+                    <div class="timeline-item" data-year="2010">
                         <div class="timeline-year">2010</div>
                         <div class="timeline-event">Released debut album "My World 2.0" featuring "Baby"</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2015')">
+                    <div class="timeline-item" data-year="2015">
                         <div class="timeline-year">2015</div>
                         <div class="timeline-event">Released "Purpose" album with hits "Sorry" and "Love Yourself"</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2018')">
+                    <div class="timeline-item" data-year="2018">
                         <div class="timeline-year">2018</div>
                         <div class="timeline-event">Married Hailey Baldwin (now Hailey Bieber)</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2020')">
+                    <div class="timeline-item" data-year="2020">
                         <div class="timeline-year">2020</div>
                         <div class="timeline-event">Released "Changes" album and documentary series</div>
                     </div>
-                    <div class="timeline-item" onclick="showTimelinePopup('2021')">
+                    <div class="timeline-item" data-year="2021">
                         <div class="timeline-year">2021</div>
                         <div class="timeline-event">Released "Justice" album featuring "Peaches" and "Stay"</div>
                     </div>
@@ -913,28 +931,26 @@
         <img id="popupImage" src="/placeholder.svg" alt="Justin Bieber">
         <h3 id="popupYear"></h3>
         <p id="popupDescription"></p>
-        <button class="close-popup" onclick="hideTimelinePopup()">Close</button>
     </div>
 
     <script>
         let currentBg = 0;
         const bgImages = document.querySelectorAll('.bg-image');
-        const totalBgs = bgImages.length;
+        const totalBgs = 5;
 
         function updateBackground() {
             const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
-            const newBg = Math.floor(scrollPercent * (totalBgs - 1));
+            const newBg = Math.min(Math.floor(scrollPercent * totalBgs), totalBgs - 1);
             
             if (newBg !== currentBg) {
                 bgImages[currentBg].classList.remove('active');
                 bgImages[newBg].classList.add('active');
                 currentBg = newBg;
-                console.log('[v1] Background changed to:', newBg);
+                console.log('[v0] Background changed to:', newBg);
             }
         }
 
         window.addEventListener('scroll', updateBackground);
-
 
         let noteCount = 0;
         let selectedColor = 'yellow';
@@ -996,6 +1012,35 @@
                     this.classList.add('selected');
                     selectedColor = this.dataset.color;
                 });
+            });
+
+            // Add hover events to timeline items
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const popup = document.getElementById('timelinePopup');
+            
+            timelineItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const year = this.dataset.year;
+                    showTimelinePopupHover(year, this);
+                });
+                
+                item.addEventListener('mouseleave', function(e) {
+                    // Only hide if not moving to popup
+                    setTimeout(() => {
+                        if (!popup.matches(':hover') && !item.matches(':hover')) {
+                            hideTimelinePopup();
+                        }
+                    }, 100);
+                });
+            });
+
+            // Keep popup visible when hovering over it
+            popup.addEventListener('mouseenter', function() {
+                // Keep popup visible
+            });
+            
+            popup.addEventListener('mouseleave', function() {
+                hideTimelinePopup();
             });
         });
 
@@ -1076,28 +1121,39 @@
             popup.style.display = 'block';
         }
 
-        function hideTimelinePopup() {
-            document.getElementById('timelinePopup').style.display = 'none';
+        function showTimelinePopupHover(year, element) {
+            const popup = document.getElementById('timelinePopup');
+            const data = timelineData[year];
+            
+            document.getElementById('popupImage').src = data.image;
+            document.getElementById('popupYear').textContent = year;
+            document.getElementById('popupDescription').textContent = data.description;
+            
+            // Position popup near the hovered element
+            const rect = element.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            popup.style.position = 'absolute';
+            popup.style.left = Math.max(20, Math.min(window.innerWidth - 420, rect.left + rect.width / 2 - 200)) + 'px';
+            popup.style.top = (rect.top + scrollTop - 380) + 'px';
+            popup.style.transform = 'none';
+            popup.style.display = 'block';
+            
+            // Trigger smooth transition
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
         }
 
-        // Add some initial sticky notes
-        window.addEventListener('load', () => {
-            console.log('[v0] Page loaded, attempting autoplay');
+        function hideTimelinePopup() {
+            const popup = document.getElementById('timelinePopup');
+            popup.classList.remove('show');
             
+            // Hide after transition completes
             setTimeout(() => {
-                document.getElementById('fanName').value = 'Belieber';
-                document.getElementById('fanMessage').value = 'Justin, you inspire me every day! 💜';
-                selectedColor = 'purple';
-                createNote();
-            }, 1000);
-            
-            setTimeout(() => {
-                document.getElementById('fanName').value = 'Sarah';
-                document.getElementById('fanMessage').value = 'Love your new music! Can\'t wait for the next tour! 🎵';
-                selectedColor = 'pink';
-                createNote();
-            }, 1500);
-        });
+                popup.style.display = 'none';
+            }, 300);
+        }
     </script>
 </body>
 </html>
