@@ -613,26 +613,38 @@
         <div class="bg-image"></div>
     </div>
 
-    <div class="audio-player">
-    <div class="current-song" id="currentSong">🎵 Sorry - Justin Bieber</div>
-    <div class="audio-controls">
-        <button class="prev-btn" onclick="playPrevSong()">⏮️</button>
-        <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">▶️</button>
-        <button class="next-btn" onclick="playNextSong()">⏭️</button>
-        <button class="mute-btn" id="muteBtn" onclick="toggleMute()">🔊</button>
-        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" onchange="changeVolume()">
+     <div class="audio-player">
+        <div class="current-song" id="currentSong">
+            ♪ Sorry - Justin Bieber
+        </div>
+        <div class="audio-controls">
+            <button class="prev-btn" onclick="playPrevSong()">
+                ‹‹
+            </button>
+            <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">
+                ▶
+            </button>
+            <button class="next-btn" onclick="playNextSong()">
+                ››
+            </button>
+            <!-- Updated mute button to use text symbols instead of emojis -->
+            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">
+                ♪
+            </button>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
+        </div>
+
+        <!-- YouTube iframe container (hidden) -->
+        <div id="youtube-player"></div>
     </div>
 
-    <!-- YouTube iframe container (hidden video) -->
-    <div id="player" style="width:0; height:0; visibility:hidden;"></div>
-    </div>
-    
     <script>
+        // YouTube API integration
         let player;
         let isPlaying = false;
         let isMuted = true;
         let currentSongIndex = 0;
-    
+
         const playlist = [
             { title: "Sorry - Justin Bieber", id: "fRh_vgS2dFE" },
             { title: "Love Yourself - Justin Bieber", id: "oyEuk8j8imI" },
@@ -641,18 +653,26 @@
             { title: "Peaches - Justin Bieber ft. Daniel Caesar & Giveon", id: "tQ0yjYUFKAE" },
             { title: "Stay - The Kid LAROI & Justin Bieber", id: "kTJczUoc26U" }
         ];
-    
-        // Load YouTube IFrame API
-        let tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.body.appendChild(tag);
-    
+
+        // Load YouTube API
+        function loadYouTubeAPI() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
+
+        // YouTube API ready callback
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
                 videoId: playlist[currentSongIndex].id,
                 playerVars: {
-                    autoplay: 1,
+                    autoplay: 0,
                     controls: 0,
+                    disablekb: 1,
+                    fs: 0,
                     modestbranding: 1,
                     rel: 0
                 },
@@ -662,93 +682,75 @@
                 }
             });
         }
-    
+
         function onPlayerReady(event) {
             player.mute();
-            isMuted = true;
             player.setVolume(50);
-            event.target.playVideo();
-            isPlaying = true;
-            document.getElementById('playPauseBtn').textContent = '⏸️';
-            document.getElementById('currentSong').textContent = `🎵 ${playlist[currentSongIndex].title}`;
-    
-            // Unmute after 5 seconds
-            setTimeout(() => {
-                player.unMute();
-                isMuted = false;
-                document.getElementById('muteBtn').textContent = '🔊';
-            }, 5000);
         }
-    
+
         function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.ENDED) {
                 playNextSong();
             }
         }
-    
+
         function togglePlayPause() {
+            if (!player) return;
+            
             if (isPlaying) {
                 player.pauseVideo();
+                document.getElementById('playPauseBtn').textContent = '▶';
                 isPlaying = false;
-                document.getElementById('playPauseBtn').textContent = '▶️';
             } else {
                 player.playVideo();
+                document.getElementById('playPauseBtn').textContent = '⏸';
                 isPlaying = true;
-                document.getElementById('playPauseBtn').textContent = '⏸️';
             }
         }
-    
-        function toggleMute() {
-            const muteBtn = document.getElementById('muteBtn');
-            if (isMuted) {
-                player.unMute();
-                isMuted = false;
-                muteBtn.textContent = '🔊';
-                document.getElementById('volumeSlider').value = player.getVolume();
-            } else {
-                player.mute();
-                isMuted = true;
-                muteBtn.textContent = '🔇';
-                document.getElementById('volumeSlider').value = 0;
-            }
-        }
-    
-        function changeVolume() {
-            const volumeSlider = document.getElementById('volumeSlider');
-            const volume = parseInt(volumeSlider.value);
-            player.setVolume(volume);
-    
-            if (volume === 0) {
-                player.mute();
-                isMuted = true;
-                document.getElementById('muteBtn').textContent = '🔇';
-            } else {
-                if (isMuted) player.unMute();
-                isMuted = false;
-                document.getElementById('muteBtn').textContent = '🔊';
-            }
-        }
-    
+
         function playNextSong() {
             currentSongIndex = (currentSongIndex + 1) % playlist.length;
-            loadSong(currentSongIndex);
+            loadCurrentSong();
         }
-    
+
         function playPrevSong() {
-            currentSongIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-            loadSong(currentSongIndex);
+            currentSongIndex = currentSongIndex === 0 ? playlist.length - 1 : currentSongIndex - 1;
+            loadCurrentSong();
         }
-    
-        function loadSong(index) {
-            const song = playlist[index];
-            player.loadVideoById(song.id);
-            document.getElementById('currentSong').textContent = `🎵 ${song.title}`;
-            if (!isPlaying) {
-                player.pauseVideo();
-            } else {
-                player.playVideo();
+
+        function loadCurrentSong() {
+            if (!player) return;
+            
+            player.loadVideoById(playlist[currentSongIndex].id);
+            document.getElementById('currentSong').textContent = `♪ ${playlist[currentSongIndex].title}`;
+            
+            if (isPlaying) {
+                setTimeout(() => player.playVideo(), 500);
             }
         }
+
+        /* Updated mute toggle to use consistent text symbols */
+        function toggleMute() {
+            if (!player) return;
+            
+            if (isMuted) {
+                player.unMute();
+                document.getElementById('muteBtn').textContent = '♪';
+                isMuted = false;
+            } else {
+                player.mute();
+                document.getElementById('muteBtn').textContent = '♫';
+                isMuted = true;
+            }
+        }
+
+        function changeVolume(value) {
+            if (!player) return;
+            player.setVolume(value);
+        }
+
+        // Initialize
+        loadYouTubeAPI();
     </script>
 
     <!-- Content -->
