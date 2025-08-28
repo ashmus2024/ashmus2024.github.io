@@ -247,7 +247,7 @@
         }
 
         /* Added timeline styles */
-        .timeline-section {
+       .timeline-section {
             padding: 4rem 2rem;
             background: rgba(10,10,10,0.95);
             backdrop-filter: blur(10px);
@@ -283,12 +283,15 @@
 
         .timeline-item {
             min-width: 250px;
-            background: rgba(255,255,255,0.95);
+            background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,107,157,0.2);
+            border: 2px solid #ff6b9d;
+            border-radius: 15px;
+            padding: 1.5rem;
             position: relative;
             transition: transform 0.3s ease;
             cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
 
         .timeline-item:hover {
@@ -299,12 +302,18 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: #ff6b9d;
-            margin-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,107,157,0.3);
+            text-align: center;
         }
 
         .timeline-event {
             font-size: 1rem;
             line-height: 1.4;
+            color: rgba(255,255,255,0.9);
+            text-align: justify;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
         .timeline-line {
