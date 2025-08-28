@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justin Bieber - Official Fanpage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            background: #000;
+            color: white;
+        }
+
+        /* Scrolling Background */
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .bg-image.active {
+            opacity: 0.7;
+        }
+
+        .bg-image:nth-child(1) { background-image: url('/img/justin1.png'); }
+        .bg-image:nth-child(2) { background-image: url('/img/justin2.png'); }
+        .bg-image:nth-child(3) { background-image: url('/img/justin3.png'); }
+        .bg-image:nth-child(4) { background-image: url('/img/justin4.png'); }
+        .bg-image:nth-child(5) { background-image: url('/img/justin5.png'); }
+        .bg-image:nth-child(6) { background-image: url('/img/justin6.png'); }
+
+        /* Simplified audio player styles */
+        .audio-player {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-width: 400px;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .audio-player {
+                background: rgba(17, 24, 39, 0.95);
+                border: 1px solid var(--border);
+            }
+        }
+
+        .audio-player:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .current-song {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--foreground);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--foreground);
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .audio-controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        /* Updated button styling to use consistent neutral colors */
+        .prev-btn, .next-btn, .play-pause-btn {
+            background: var(--primary);
+            border: none;
+            border-radius: 12px;
+            width: 48px;
+            height: 48px;
+            color: var(--primary-foreground);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-family: inherit;
+        }
+
+        .prev-btn, .next-btn {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
+
+        .prev-btn:hover, .next-btn:hover, .play-pause-btn:hover {
+            background: var(--ring);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .prev-btn:active, .next-btn:active, .play-pause-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Updated mute button to match design system colors */
+        .mute-btn {
+            background: var(--secondary);
+            border: none;
+            border-radius: 10px;
+            width: 40px;
+            height: 40px;
+            color: var(--secondary-foreground);
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+        }
+
+        .mute-btn:hover {
+            background: var(--muted);
+            transform: scale(1.05);
+        }
+
+        .volume-slider {
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--border);
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            transition: background 0.2s ease;
+        }
+
+        .volume-slider:hover {
+            background: var(--ring);
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            background: var(--ring);
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 640px) {
+            .audio-player {
+                bottom: 16px;
+                right: 16px;
+                left: 16px;
+                min-width: unset;
+                padding: 16px;
+            }
+
+            .audio-controls {
+                gap: 10px;
+            }
+        }
+
+        /* Hidden YouTube iframe */
+        #youtube-player {
+            display: none;
+        }
+
+        /* Added timeline styles */
+        .timeline-section {
+            padding: 4rem 2rem;
+            background: rgba(10,10,10,0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .timeline-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .timeline {
+            display: flex;
+            overflow-x: auto;
+            padding: 2rem 0;
+            gap: 3rem;
+            scroll-behavior: smooth;
+        }
+
+        .timeline::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timeline::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+
+        .timeline::-webkit-scrollbar-thumb {
+            background: #ff6b9d;
+            border-radius: 4px;
+        }
+
+        .timeline-item {
+            min-width: 250px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,107,157,0.2);
+            position: relative;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .timeline-year {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b9d;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-event {
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b9d, #c44569);
+            z-index: -1;
+        }
+
+        /* Content Overlay */
+        .content {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
+        }
+
+        /* Header */
+        .header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .header h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b9d, #c44569, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,107,157,0.2);
+            border: 1px solid rgba(255,107,157,0.3);
+            border-radius: 50%;
+            color: #ff6b9d;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: rgba(255,107,157,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255,107,157,0.3);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-10px); }
+            60% { transform: translateX(-50%) translateY(-5px); }
+        }
+
+        /* Music Videos Section */
+        .music-section {
+            padding: 4rem 2rem;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px 24px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .video-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,107,157,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,107,157,0.3);
+        }
+
+        .video-card h3 {
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            font-size: 1.2rem;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Sticky Notes Section */
+        .sticky-section {
+            padding: 4rem 2rem;
+            background: rgba(20,20,20,0.95);
+            backdrop-filter: blur(10px);
+            min-height: 100vh;
+        }
+
+        .sticky-board {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 600px;
+            background: rgba(139,69,19,0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 3px solid #8b4513;
+        }
+
+        .add-note-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,157,0.4);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .add-note-btn.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .add-note-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .sticky-note {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,107,157,0.2);
+            padding: 1rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: move;
+            transition: transform 0.2s ease;
+            font-family: 'Comic Sans MS', cursive;
+            color: #2c3e50;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .sticky-note:hover {
+            transform: rotate(2deg) scale(1.05);
+        }
+
+        .sticky-note.pink { background: #ff6b9d; color: white; }
+        .sticky-note.blue { background: #74b9ff; color: white; }
+        .sticky-note.green { background: #00b894; color: white; }
+        .sticky-note.purple { background: #9b59b6; color: white; }
+        .sticky-note.orange { background: #fd79a8; color: white; }
+
+        .delete-note {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #e74c3c;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+        }
+
+        .sticky-note:hover .delete-note {
+            display: block;
+        }
+
+        /* Added note creation popup styles */
+        .note-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255,107,157,0.3);
+            z-index: 1001;
+            display: none;
+        }
+
+        .popup-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            min-width: 300px;
+        }
+
+        .popup-input {
+            padding: 0.75rem;
+            border: 1px solid rgba(255,107,157,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .popup-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .color-options {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .color-option.selected {
+            border-color: white;
+        }
+
+        .color-option.yellow { background: #ffeb3b; }
+        .color-option.pink { background: #ff6b9d; }
+        .color-option.blue { background: #74b9ff; }
+        .color-option.green { background: #00b894; }
+        .color-option.purple { background: #9b59b6; }
+        .color-option.orange { background: #fd79a8; }
+
+        .popup-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        .popup-btn.create {
+            background: linear-gradient(45deg, #ff6b9d, #c44569);
+            color: white;
+        }
+
+        .popup-btn.cancel {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .popup-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Enhanced timeline popup with smooth transitions */
+        .timeline-popup {
+            position: absolute;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255,107,157,0.3);
+            z-index: 1002;
+            display: none;
+            max-width: 400px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px) scale(0.9);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .timeline-popup.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2.5rem; }
+            .header p { font-size: 1.2rem; }
+            .section-title { font-size: 2rem; }
+            .videos-grid { grid-template-columns: 1fr; }
+            .sticky-note { width: 150px; height: 150px; }
+            .audio-player { 
+                left: 1rem; 
+                bottom: 1rem; 
+                min-width: 300px; 
+                flex-direction: column;
+                gap: 12px;
+            }
+            .current-song {
+                max-width: 250px;
+            }
+            .timeline-item { min-width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Images -->
+    <div class="background-container">
+        <div class="bg-image active"></div>
+        <div class="bg-image"></div>
+        <div class="bg-image"></div>
+        <div class="bg-image"></div>
+        <div class="bg-image"></div>
+    </div>
+
+    <!-- Enhanced audio player with play/pause button -->
+    <div class="audio-player">
+        <div class="current-song" id="currentSong">♪ Sorry - Justin Bieber</div>
+        <div class="audio-controls">
+            <button class="prev-btn" onclick="playPrevSong()">‹‹</button>
+            <button class="play-pause-btn" id="playPauseBtn" onclick="togglePlayPause()">▶</button>
+            <button class="next-btn" onclick="playNextSong()">››</button>
+            <button class="mute-btn" id="muteBtn" onclick="toggleMute()">♪</button>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" oninput="changeVolume(this.value)">
+        </div>
+
+        <!-- Hidden YouTube player -->
+        <div id="youtube-player" style="display:none;"></div>
+    </div>
+
+    <script>
+        let player;
+        let isPlaying = false;
+        let isMuted = false;
+        let currentSongIndex = 0;
+
+        const playlist = [
+            { title: "Sorry - Justin Bieber", id: "fRh_vgS2dFE" },
+            { title: "Love Yourself - Justin Bieber", id: "oyEuk8j8imI" },
+            { title: "What Do You Mean? - Justin Bieber", id: "DK_0jXPuIr0" },
+            { title: "Baby - Justin Bieber ft. Ludacris", id: "kffacxfA7G4" },
+            { title: "Peaches - Justin Bieber ft. Daniel Caesar & Giveon", id: "tQ0yjYUFKAE" },
+            { title: "Stay - The Kid LAROI & Justin Bieber", id: "kTJczUoc26U" }
+        ];
+
+        // Load YouTube API script
+        function loadYouTubeAPI() {
+            if (document.getElementById("yt-script")) return;
+            const tag = document.createElement('script');
+            tag.id = "yt-script";
+            tag.src = "https://www.youtube.com/iframe_api";
+            document.body.appendChild(tag);
+        }
+
+        // Called automatically by YouTube API
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: playlist[currentSongIndex].id,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    disablekb: 1,
+                    fs: 0,
+                    modestbranding: 1,
+                    rel: 0
+                },
+                events: {
+                    onReady: onPlayerReady,
+                    onStateChange: onPlayerStateChange,
+                    onError: onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady() {
+            player.setVolume(50);
+            updateMuteButton();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                isPlaying = true;
+                document.getElementById('playPauseBtn').textContent = '⏸';
+            } else if (event.data === YT.PlayerState.PAUSED) {
+                isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '▶';
+            }    
+        }
+
+        function onPlayerError() {
+            playNextSong();
+        }
+
+        function togglePlayPause() {
+            if (!player) return;
+            if (isPlaying) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+        }
+
+        function playNextSong() {
+            if (!player) return;
+            currentSongIndex = (currentSongIndex + 1) % playlist.length;
+            loadCurrentSong();
+        }
+
+        function playPrevSong() {
+            if (!player) return;
+            currentSongIndex = currentSongIndex === 0 ? playlist.length - 1 : currentSongIndex - 1;
+            loadCurrentSong();
+        }
+
+        function loadCurrentSong() {
+            player.loadVideoById(playlist[currentSongIndex].id);
+            document.getElementById('currentSong').textContent = `♪ ${playlist[currentSongIndex].title}`;
+        }
+
+        function toggleMute() {
+            if (!player) return;
+            if (isMuted) {
+                player.unMute();
+                isMuted = false;
+            } else {
+                player.mute();
+                isMuted = true;
+            }
+            updateMuteButton();
+        }
+
+        function updateMuteButton() {
+            const muteBtn = document.getElementById('muteBtn');
+            muteBtn.textContent = isMuted ? '♫' : '♪';
+        }
+
+        function changeVolume(value) {
+            if (!player) return;
+            player.setVolume(value);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', loadYouTubeAPI);
+    </script>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Header Section -->
+        <section class="header">
+            <h1>JUSTIN BIEBER</h1>
+            <p>The Ultimate Fan Experience</p>
+            <div class="social-links">
+                <a href="https://www.instagram.com/justinbieber/" target="_blank" class="social-link" title="Instagram">📷</a>
+                <a href="https://www.tiktok.com/@justinbieber" target="_blank" class="social-link" title="TikTok">🎵</a>
+                <a href="https://twitter.com/justinbieber" target="_blank" class="social-link" title="Twitter">🐦</a>
+                <a href="https://www.youtube.com/user/JustinBieberVEVO" target="_blank" class="social-link" title="YouTube">📺</a>
+                <a href="https://open.spotify.com/artist/1uNFoZAHBGtllmzznpCI3s" target="_blank" class="social-link" title="Spotify">🎧</a>
+            </div>
+            <div class="scroll-indicator">
+                <div style="font-size: 2rem;">↓</div>
+            </div>
+        </section>
+
+        <!-- Updated timeline items to use hover instead of click -->
+        <section class="timeline-section">
+            <h2 class="section-title">Justin's Journey</h2>
+            <div class="timeline-container">
+                <div class="timeline-line"></div>
+                <div class="timeline">
+                    <!-- Removed onclick attributes, will use hover events instead -->
+                    <div class="timeline-item" data-year="1994">
+                        <div class="timeline-year">1994</div>
+                        <div class="timeline-event">Born in London, Ontario, Canada on March 1st</div>
+                    </div>
+                    <div class="timeline-item" data-year="2007">
+                        <div class="timeline-year">2007</div>
+                        <div class="timeline-event">Discovered on YouTube by talent manager Scooter Braun</div>
+                    </div>
+                    <div class="timeline-item" data-year="2009">
+                        <div class="timeline-year">2009</div>
+                        <div class="timeline-event">Released debut single "One Time" and EP "My World"</div>
+                    </div>
+                    <div class="timeline-item" data-year="2010">
+                        <div class="timeline-year">2010</div>
+                        <div class="timeline-event">Released debut album "My World 2.0" featuring "Baby"</div>
+                    </div>
+                    <div class="timeline-item" data-year="2015">
+                        <div class="timeline-year">2015</div>
+                        <div class="timeline-event">Released "Purpose" album with hits "Sorry" and "Love Yourself"</div>
+                    </div>
+                    <div class="timeline-item" data-year="2018">
+                        <div class="timeline-year">2018</div>
+                        <div class="timeline-event">Married Hailey Baldwin (now Hailey Bieber)</div>
+                    </div>
+                    <div class="timeline-item" data-year="2020">
+                        <div class="timeline-year">2020</div>
+                        <div class="timeline-event">Released "Changes" album and documentary series</div>
+                    </div>
+                    <div class="timeline-item" data-year="2021">
+                        <div class="timeline-year">2021</div>
+                        <div class="timeline-event">Released "Justice" album featuring "Peaches" and "Stay"</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Music Videos Section -->
+        <section class="music-section">
+            <h2 class="section-title">Latest Music Videos</h2>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <h3>Ghost</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/Kb24RrHIbFk" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3>Peaches (feat. Daniel Caesar & Giveon)</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/tQ0yjYUFKAE" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3>Stay (with The Kid LAROI)</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/kTJczUoc26U" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3>Sorry</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/fRh_vgS2dFE" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3>What Do You Mean?</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/DK_0jXPuIr0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <h3>Love Yourself</h3>
+                    <div class="video-wrapper">
+                        <iframe src="https://www.youtube.com/embed/oyEuk8j8imI" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sticky Notes Section -->
+        <section class="sticky-section">
+            <h2 class="section-title">Fan Messages Board</h2>
+            <div class="sticky-board" id="stickyBoard">
+                <!-- Sticky notes will be added here dynamically -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Add Note Button -->
+    <button class="add-note-btn" onclick="showNotePopup()">+</button>
+
+    <!-- Added note creation popup -->
+    <div class="note-popup" id="notePopup">
+        <div class="popup-content">
+            <h3 style="text-align: center; color: #ff6b9d; margin-bottom: 1rem;">Create a Fan Message</h3>
+            <input type="text" class="popup-input" id="fanName" placeholder="Your name (optional)">
+            <textarea class="popup-input" id="fanMessage" placeholder="Write your message to Justin..." rows="4"></textarea>
+            <div style="text-align: center; margin: 0.5rem 0; color: rgba(255,255,255,0.8);">Choose a color:</div>
+            <div class="color-options">
+                <div class="color-option yellow selected" data-color="yellow"></div>
+                <div class="color-option pink" data-color="pink"></div>
+                <div class="color-option blue" data-color="blue"></div>
+                <div class="color-option green" data-color="green"></div>
+                <div class="color-option purple" data-color="purple"></div>
+                <div class="color-option orange" data-color="orange"></div>
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn create" onclick="createNote()">Create Note</button>
+                <button class="popup-btn cancel" onclick="hideNotePopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Added timeline popup -->
+    <div class="timeline-popup" id="timelinePopup">
+        <img id="popupImage" src="/placeholder.svg" alt="Justin Bieber">
+        <h3 id="popupYear"></h3>
+        <p id="popupDescription"></p>
+    </div>
+
+    <script>
+        let currentBg = 0;
+        const bgImages = document.querySelectorAll('.bg-image');
+        const totalBgs = 5;
+
+        function updateBackground() {
+            const scrollPercent = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+            const newBg = Math.min(Math.floor(scrollPercent * totalBgs), totalBgs - 1);
+            
+            if (newBg !== currentBg) {
+                bgImages[currentBg].classList.remove('active');
+                bgImages[newBg].classList.add('active');
+                currentBg = newBg;
+                console.log('[v0] Background changed to:', newBg);
+            }
+        }
+
+        window.addEventListener('scroll', updateBackground);
+
+        let noteCount = 0;
+        let selectedColor = 'yellow';
+
+        function showNotePopup() {
+            document.getElementById('notePopup').style.display = 'block';
+        }
+
+        function hideNotePopup() {
+            document.getElementById('notePopup').style.display = 'none';
+            document.getElementById('fanName').value = '';
+            document.getElementById('fanMessage').value = '';
+        }
+
+        function createNote() {
+            const fanName = document.getElementById('fanName').value;
+            const fanMessage = document.getElementById('fanMessage').value;
+            
+            if (!fanMessage.trim()) {
+                alert('Please write a message!');
+                return;
+            }
+
+            const board = document.getElementById('stickyBoard');
+            const note = document.createElement('textarea');
+            const deleteBtn = document.createElement('button');
+            
+            let noteContent = fanMessage;
+            if (fanName.trim()) {
+                noteContent += `\n\n- ${fanName}`;
+            }
+            
+            note.className = `sticky-note ${selectedColor}`;
+            note.value = noteContent;
+            note.style.left = Math.random() * (board.offsetWidth - 220) + 'px';
+            note.style.top = Math.random() * (board.offsetHeight - 220) + 'px';
+            note.style.transform = `rotate(${Math.random() * 20 - 10}deg)`;
+            
+            deleteBtn.className = 'delete-note';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = () => note.remove();
+            
+            note.appendChild(deleteBtn);
+            board.appendChild(note);
+            
+            // Make notes draggable
+            makeDraggable(note);
+            
+            noteCount++;
+            hideNotePopup();
+        }
+
+        // Color selection for popup
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorOptions = document.querySelectorAll('.color-option');
+            colorOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    colorOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedColor = this.dataset.color;
+                });
+            });
+
+            // Add hover events to timeline items
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const popup = document.getElementById('timelinePopup');
+            
+            timelineItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    const year = this.dataset.year;
+                    showTimelinePopupHover(year, this);
+                });
+                
+                item.addEventListener('mouseleave', function(e) {
+                    // Only hide if not moving to popup
+                    setTimeout(() => {
+                        if (!popup.matches(':hover') && !item.matches(':hover')) {
+                            hideTimelinePopup();
+                        }
+                    }, 100);
+                });
+            });
+
+            // Keep popup visible when hovering over it
+            popup.addEventListener('mouseenter', function() {
+                // Keep popup visible
+            });
+            
+            popup.addEventListener('mouseleave', function() {
+                hideTimelinePopup();
+            });
+
+            // Intersection observer for post button visibility
+            const addNoteBtn = document.querySelector('.add-note-btn');
+            const stickyBoard = document.querySelector('.sticky-board');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        addNoteBtn.classList.add('visible');
+                    } else {
+                        addNoteBtn.classList.remove('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            observer.observe(stickyBoard);
+        });
+
+        function makeDraggable(element) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            
+            element.onmousedown = dragMouseDown;
+            
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+            }
+            
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+
+        const timelineData = {
+            '1994': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'Justin Drew Bieber was born on March 1, 1994, in London, Ontario, Canada. He was raised by his single mother, Pattie Mallette, and showed early interest in music, learning to play drums, piano, guitar, and trumpet.'
+            },
+            '2007': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'At age 13, Justin was discovered on YouTube by talent manager Scooter Braun after his mother posted videos of him singing covers of popular songs. This discovery would change his life forever.'
+            },
+            '2009': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'Justin released his debut single "One Time" which became a worldwide hit. His EP "My World" was released later that year, making him the first artist to have seven songs from a debut record chart on the Billboard Hot 100.'
+            },
+            '2010': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'The release of "My World 2.0" and the hit single "Baby" featuring Ludacris catapulted Justin to global superstardom. The song became one of the most-watched music videos on YouTube at the time.'
+            },
+            '2015': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'Justin\'s "Purpose" album marked his artistic maturity with hits like "What Do You Mean?", "Sorry", and "Love Yourself". The album showcased his growth as both an artist and a person.'
+            },
+            '2018': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'Justin married model Hailey Baldwin (now Hailey Bieber) in a courthouse ceremony in September 2018, followed by a larger celebration in 2019. This marked a new chapter in his personal life.'
+            },
+            '2020': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'Justin released "Changes", his first album in five years, along with a documentary series that gave fans an intimate look into his life, struggles, and journey to mental health.'
+            },
+            '2021': {
+                image: '/placeholder.svg?height=200&width=200',
+                description: 'The "Justice" album featured collaborations with artists like Daniel Caesar, Giveon, and The Kid LAROI. Songs like "Peaches" and "Stay" dominated charts worldwide, proving his continued relevance.'
+            }
+        };
+
+        function showTimelinePopup(year) {
+            const popup = document.getElementById('timelinePopup');
+            const data = timelineData[year];
+            
+            document.getElementById('popupImage').src = data.image;
+            document.getElementById('popupYear').textContent = year;
+            document.getElementById('popupDescription').textContent = data.description;
+            
+            popup.style.display = 'block';
+        }
+
+        function showTimelinePopupHover(year, element) {
+            const popup = document.getElementById('timelinePopup');
+            const data = timelineData[year];
+            
+            document.getElementById('popupImage').src = data.image;
+            document.getElementById('popupYear').textContent = year;
+            document.getElementById('popupDescription').textContent = data.description;
+            
+            // Position popup near the hovered element
+            const rect = element.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            popup.style.position = 'absolute';
+            popup.style.left = Math.max(20, Math.min(window.innerWidth - 420, rect.left + rect.width / 2 - 200)) + 'px';
+            popup.style.top = (rect.top + scrollTop - 380) + 'px';
+            popup.style.transform = 'none';
+            popup.style.display = 'block';
+            
+            // Trigger smooth transition
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+        }
+
+        function hideTimelinePopup() {
+            const popup = document.getElementById('timelinePopup');
+            popup.classList.remove('show');
+            
+            // Hide after transition completes
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
